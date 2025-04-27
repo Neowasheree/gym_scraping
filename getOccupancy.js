@@ -1,32 +1,33 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const nodemailer = require('nodemailer');
 
 (async () => {
-  // 用系统自带的 chrome-stable
-  const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/google-chrome-stable',
-    args: ['--no-sandbox','--disable-gpu']
-  });
+  try {
+    // 1) 启动无头浏览器并打开页面
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/google-chrome-stable',
+      args: ['--no-sandbox', '--disable-gpu']
+    });
+    const page = await browser.newPage();
+    await page.goto(
+      'https://www.fit-star.de/fitnessstudio/muenchen-neuhausen',
+      { waitUntil: 'networkidle2' }
+    );
 
-    // 2) 等待占用率元素出现
+    // 2) 等待占用率元素出现并包含数字
     await page.waitForSelector('#fs-livedata-percentage', { timeout: 15000 });
-
-    // 3) 再等它“写入”数字（检测 innerText 中至少含有一个数字）
     await page.waitForFunction(
-      () => {
-        const el = document.querySelector('#fs-livedata-percentage');
-        return el && /\d/.test(el.innerText);
-      },
+      () => /\d/.test(document.querySelector('#fs-livedata-percentage')?.innerText),
       { timeout: 15000 }
     );
 
-    // 4) 取到最终数字
+    // 3) 读取占用率文本
     const percentage = await page.$eval(
       '#fs-livedata-percentage',
       el => el.innerText.trim()
     );
 
-    // 5) 配置 SMTP transporter
+    // 4) 初始化邮件客户端
     const transporter = nodemailer.createTransport({
       host:   process.env.SMTP_HOST,
       port:   Number(process.env.SMTP_PORT),
@@ -37,15 +38,15 @@ const nodemailer = require('nodemailer');
       }
     });
 
-    // 6) 发送邮件
+    // 5) 发送邮件
     await transporter.sendMail({
       from:    `"FitStar Bot" <${process.env.SMTP_USER}>`,
       to:      process.env.TO_EMAIL,
-      subject: 'Gym Occupancy',
-      text:    `Neuhausen München ：${percentage}`
+      subject: '【19:30】健身房占用率报告',
+      text:    `Neuhausen München 当前占用率：${percentage}`
     });
 
-    console.log(`占用率邮件已发送，数值：${percentage}`);
+    console.log(`邮件已发送，当前占用率：${percentage}`);
     await browser.close();
   } catch (err) {
     console.error('脚本执行出错：', err);
