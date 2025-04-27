@@ -1,4 +1,3 @@
-cat > package.json << 'EOF'
 {
   "name": "gym-occupancy",
   "version": "1.0.0",
@@ -7,4 +6,3 @@ cat > package.json << 'EOF'
     "nodemailer": "^6.9.0"
   }
 }
-EOF
