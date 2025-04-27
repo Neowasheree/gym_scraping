@@ -42,8 +42,8 @@ const nodemailer = require('nodemailer');
     await transporter.sendMail({
       from:    `"FitStar Bot" <${process.env.SMTP_USER}>`,
       to:      process.env.TO_EMAIL,
-      subject: '【19:30】健身房占用率报告',
-      text:    `Neuhausen München 当前占用率：${percentage}`
+      subject: 'Gym Occupancy Rate Report',
+      text:    `Neuhausen München: ${percentage}%`
     });
 
     console.log(`邮件已发送，当前占用率：${percentage}`);
