@@ -2,14 +2,11 @@ const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
 
 (async () => {
-  try {
-    // 1) 启动无头浏览器并打开页面
-    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
-    const page    = await browser.newPage();
-    await page.goto(
-      'https://www.fit-star.de/fitnessstudio/muenchen-neuhausen',
-      { waitUntil: 'networkidle2' }
-    );
+  // 用系统自带的 chrome-stable
+  const browser = await puppeteer.launch({
+    executablePath: '/usr/bin/google-chrome-stable',
+    args: ['--no-sandbox','--disable-gpu']
+  });
 
     // 2) 等待占用率元素出现
     await page.waitForSelector('#fs-livedata-percentage', { timeout: 15000 });
