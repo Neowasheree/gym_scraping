@@ -1,4 +1,8 @@
-"dependencies": {
-  "puppeteer-core": "^20.0.0",
-  "nodemailer": "^6.9.0"
+{
+  "name": "gym-occupancy",
+  "version": "1.0.0",
+  "dependencies": {
+    "puppeteer-core": "^20.0.0",
+    "nodemailer": "^6.9.0"
+  }
 }
