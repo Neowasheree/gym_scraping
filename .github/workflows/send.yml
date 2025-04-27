@@ -17,6 +17,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          
+      - name: Cache NPM modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm                   # 缓存本地 npm 缓存，下次不用重下
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
