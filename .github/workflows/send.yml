@@ -3,9 +3,9 @@ name: Send Gym Occupancy Report
 on:
   # 手动触发
   workflow_dispatch:
-  # 定时触发：UTC 17:30
-  schedule:
-    - cron: '30 17 * * *'
+  # # 定时触发：UTC 17:30
+  # schedule:
+  #   - cron: '30 17 * * *'
 
 jobs:
   run:
