@@ -1,0 +1,39 @@
+name: Send Gym Occupancy Report
+
+on:
+  # 手动触发
+  workflow_dispatch:
+  # # 定时触发：UTC 17:30
+  # schedule:
+  #   - cron: '30 17 * * *'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Cache NPM modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm                   # 缓存本地 npm 缓存，下次不用重下
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run scraper & mailer
+        run: node getOccupancy.js
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          TO_EMAIL:  ${{ secrets.TO_EMAIL }}
